@@ -253,16 +253,16 @@
       else if (e.key === "End"){ e.preventDefault(); go(maxX()); }
     });
 
-    var down = false, dragging = false, sx = 0, sl = 0, pid = null, block = false;
+    var down = false, dragging = false, sx = 0, sl = 0, pid = null, block = false, vx = 0, lx = 0, lt = 0;
     rail.addEventListener("pointerdown", function(e){
       if (e.pointerType !== "mouse" || e.button !== 0) return;
-      down = true; dragging = false; sx = e.clientX; sl = rail.scrollLeft; pid = e.pointerId;
+      down = true; dragging = false; sx = e.clientX; sl = rail.scrollLeft; pid = e.pointerId; vx = 0; lx = e.clientX; lt = e.timeStamp;
     });
     rail.addEventListener("pointermove", function(e){
       if (!down || e.pointerId !== pid) return;
       var dx = e.clientX - sx;
       if (!dragging && Math.abs(dx) > 6){ dragging = true; rail.classList.add("drag"); try { rail.setPointerCapture(pid); } catch(_){} }
-      if (dragging){ e.preventDefault(); rail.scrollLeft = sl - dx; }
+      if (dragging){ e.preventDefault(); rail.scrollLeft = sl - dx; var dt = e.timeStamp - lt; if (dt > 0){ vx = vx * .6 + ((e.clientX - lx) / dt) * .4; lx = e.clientX; lt = e.timeStamp; } }
     });
     function end(e){
       if (!down || (e && e.pointerId !== pid)) return;
@@ -273,7 +273,8 @@
       var x = rail.scrollLeft, s = step();
       rail.classList.remove("drag");
       rail.scrollLeft = x;
-      go(Math.round(x / s) * s);
+      var fling = rm.matches || performance.now() - lt > 120 ? 0 : Math.max(-1.6, Math.min(1.6, vx)) * 260;
+      go(Math.round((x - fling) / s) * s);
     }
     rail.addEventListener("pointerup", end);
     rail.addEventListener("pointercancel", end);

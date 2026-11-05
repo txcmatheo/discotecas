@@ -31,7 +31,11 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"NightClub","@id":"https://discotecatutaina.com/#nightclub","name":"Tutaina Eje Cafetero","alternateName":"Discoteca Tutaina, Eje Cafetero","url":"https://discotecatutaina.com/","logo":"https://discotecatutaina.com/img/logo-tutaina.png","image":["https://discotecatutaina.com/wp-content/uploads/2025/05/Fiesta-eje-cafetero.webp","https://discotecatutaina.com/wp-content/uploads/2025/05/La-mejor-discoteca-de-pereira.webp","https://discotecatutaina.com/wp-content/uploads/2025/05/noches-de-rumba-pereira.webp","https://discotecatutaina.com/wp-content/uploads/2025/05/Rumba-eje-cafetero.webp"],"description":"Discoteca en la Avenida Circunvalar de Pereira, Eje Cafetero: Jueves de Barra Libre, Viernes Agropecuario y sábados temáticos con artistas en vivo. Mesas y zonas VIP con reserva.","telephone":"+573011265132","address":{"@type":"PostalAddress","streetAddress":"Av. Circunvalar # 13-01 Este 10","addressLocality":"Pereira","addressRegion":"Risaralda","addressCountry":"CO"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Thursday","Friday","Saturday"],"opens":"21:30","closes":"04:00"}],"priceRange":"$$","currenciesAccepted":"COP","sameAs":["https://www.instagram.com/tutaina.ejecafetero/"],"hasMap":"https://www.google.com/maps/search/?api=1&query=Tutaina+Eje+Cafetero+Circunvalar+Pereira","acceptsReservations":true,"areaServed":"Eje Cafetero","potentialAction":{"@type":"ReserveAction","target":{"@type":"EntryPoint","urlTemplate":"https://wa.me/573011265132?text=Hola%20Tutaina%2C%20quiero%20reservar%20una%20mesa.","actionPlatform":["https://schema.org/DesktopWebPlatform","https://schema.org/MobileWebPlatform"]},"result":{"@type":"Reservation","name":"Reserva de mesa o zona VIP en Tutaina"}}}</script>
 <script type="application/ld+json" id="ld-events">{"@context":"https://schema.org","@type":"Event","name":"El linaje","description":"Halloween de vampiros en Tutaina: tres noches de disfraz (30 oct – 1 nov) y 10 millones en premios.","startDate":"2026-10-30T21:30:00-05:00","endDate":"2026-11-02T04:00:00-05:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Tutaina Eje Cafetero","address":{"@type":"PostalAddress","streetAddress":"Av. Circunvalar # 13-01 Este 10","addressLocality":"Pereira","addressRegion":"Risaralda","addressCountry":"CO"}},"image":["https://discotecatutaina.com/wp-content/uploads/2026/10/845543157_18645709429044927_1256940028921947836_n.webp"],"url":"https://discotecatutaina.com/eventos/el-linaje/","organizer":{"@type":"Organization","name":"Tutaina Eje Cafetero","url":"https://discotecatutaina.com/"}}</script>
 <script type="application/ld+json" id="ld-faq">{"@context":"https://schema.org","@type":"FAQPage","@id":"https://discotecatutaina.com/#faq","mainEntity":[{"@type":"Question","name":"¿Qué días y en qué horario abre Tutaina?","acceptedAnswer":{"@type":"Answer","text":"Jueves a sábado, de 9:30 PM a 4:00 AM. Domingo a miércoles cerrado, salvo fechas especiales anunciadas en Instagram."}},{"@type":"Question","name":"¿Dónde queda la discoteca?","acceptedAnswer":{"@type":"Answer","text":"En la Av. Circunvalar # 13-01 Este 10, Pereira, Risaralda. Sobre la Circunvalar, a la mano desde Cuba, Pinares, Los Álamos y el centro."}},{"@type":"Question","name":"¿Cómo reservo una mesa o zona VIP?","acceptedAnswer":{"@type":"Answer","text":"Mesas y zonas VIP se reservan por WhatsApp al +57 301 126 5132, o por llamada al mismo número. Mándanos la fecha, cuántos vienen y a nombre de quién queda la mesa, y te confirmamos."}},{"@type":"Question","name":"¿Hace falta reservar?","acceptedAnswer":{"@type":"Answer","text":"Para mesas y zonas VIP, mejor con reserva. Para eventos con artista en vivo, mejor con tiempo."}},{"@type":"Question","name":"¿Hay código de vestimenta?","acceptedAnswer":{"@type":"Answer","text":"Sí. No permitimos el ingreso con chompas, sudaderas, pantalonetas, bermudas, chanclas, viseras ni camisetas sin mangas. Tampoco con alucinógenos ni armas de fuego o cortantes."}},{"@type":"Question","name":"¿Cuál es la edad mínima para entrar?","acceptedAnswer":{"@type":"Answer","text":"Solo mayores de 18. Nos reservamos el derecho de admisión."}},{"@type":"Question","name":"¿Qué fiesta hay cada noche?","acceptedAnswer":{"@type":"Answer","text":"Jueves de Barra Libre, con condiciones en el flyer de la semana; Viernes Agropecuario, la noche más cafetera; y cada sábado una fiesta distinta, con artistas en vivo según la agenda. Puertas a las 9:30 PM."}},{"@type":"Question","name":"¿Dónde se anuncian los eventos?","acceptedAnswer":{"@type":"Answer","text":"En Instagram, @tutaina.ejecafetero, y en la agenda de esta página. Ahí salen las fechas especiales y los flyers de cada semana. El line-up puede cambiar."}}]}</script>
+<script src="js/head.js"></script>
 <link rel="stylesheet" href="css/styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="js/fx.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#agenda">Ir a la agenda</a>
@@ -51,6 +55,7 @@
       </button>
     </nav>
   </div>
+  <div class="fx-progress" aria-hidden="true"></div>
 </header>
 <nav class="drawer" id="drawer" aria-label="Menú">
   <a href="#agenda">Agenda</a>
@@ -65,6 +70,7 @@
 <button class="totop" type="button" id="toTop" aria-label="Volver arriba" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg></button>
 <main id="top">
   <section class="hero" aria-labelledby="h1">
+    <div class="hero-fx" aria-hidden="true"><canvas id="heroFx" width="16" height="9"></canvas></div>
     <div class="wrap hero-grid">
       <div class="brand">
         <h1 id="h1"><span class="lockup"><img class="logo-img" src="img/logo-tutaina.webp" alt="" width="566" height="188" decoding="async" fetchpriority="high"></span><span class="vh">Tutaina Eje Cafetero, discoteca en la Avenida Circunvalar de Pereira</span></h1>
@@ -133,6 +139,7 @@
     </div>
   </section>
 
+  <div class="pin-x" id="pinX">
   <section class="sec" id="eventos-pasados" aria-labelledby="eventos-pasados-title">
     <div class="wrap">
       <div class="head">
@@ -146,6 +153,7 @@
       <p class="vh" id="archStatus" role="status"></p>
     </div>
   </section>
+  </div>
 
   <section class="sec" id="fotos" aria-labelledby="fotos-title">
     <div class="wrap">

@@ -92,6 +92,7 @@
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 </svg>
 <a class="skip" href="#agenda">Ir a la agenda</a>
+<div class="sprog" id="sprog" aria-hidden="true"></div>
 
 <header class="top" id="topbar">
   <div class="wrap bar">
@@ -124,6 +125,7 @@
 <main id="top">
   <section class="hero" id="hero" aria-labelledby="h1">
     <div class="hero-bg"><img src="img/barra-sombrero.webp" alt="Barra iluminada de Cantina 70 con una mujer de sombrero vaquero" width="831" height="1020" fetchpriority="high" decoding="async"></div>
+    <div class="hero-fx" aria-hidden="true"><canvas class="hero-cv" id="heroFx" aria-hidden="true"></canvas></div>
     <h1 id="h1" class="vh">Cantina 70, discoteca en La 70, Laureles, Medellín</h1>
     <div class="wrap">
       <div class="h-in">
@@ -384,5 +386,8 @@
 
 <script src="../shared/ig-events.js"></script>
 <script src="js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="js/fx.js" defer></script>
 </body>
 </html>

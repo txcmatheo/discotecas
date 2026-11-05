@@ -1,4 +1,19 @@
 (function () {
+  var BASE = ((document.currentScript && document.currentScript.src) || "").replace(/[^\/]*$/, "");
+  function withVideo(promise) {
+    return promise.then(function (res) {
+      var evs = (res && res.events) || [];
+      if (!evs.some(function (e) { return e && e.video; })) return res;
+      var go = function () { if (window.IGVideo) window.IGVideo.register(evs); };
+      if (window.IGVideo) go();
+      else {
+        var s = document.createElement("script");
+        s.src = BASE + "ig-video.js"; s.async = true; s.onload = go;
+        document.head.appendChild(s);
+      }
+      return res;
+    });
+  }
   var ENDPOINT = window.IG_EVENTS_ENDPOINT || "/api/ig-events";
   var TIMEOUT = 4500;
   var CACHE_MIN = 10;
@@ -58,5 +73,5 @@
     return "hace " + Math.round(s / 86400) + " días";
   }
 
-  window.IGEvents = { load: load, ago: ago };
+  window.IGEvents = { load: function (opts) { return withVideo(load(opts)); }, ago: ago };
 })();

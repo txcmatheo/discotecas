@@ -21,7 +21,7 @@ const CLUBS = {
   "cantina-70": { handle: "cantina70.med" }
 };
 const GRAPH = "https://graph.instagram.com/v21.0";
-const FIELDS = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
+const FIELDS = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,children{media_type,media_url,thumbnail_url}";
 
 const envKey = (slug) => "IG_TOKEN_" + slug.toUpperCase().replace(/-/g, "_");
 
@@ -46,7 +46,7 @@ module.exports = async function handler(req, res) {
   if (!token) return res.status(503).json({ error: "Instagram no conectado para este club", events: [] });
 
   try {
-    const r = await fetch(`${GRAPH}/me/media?fields=${FIELDS}&limit=25&access_token=${encodeURIComponent(token)}`);
+    const r = await fetch(`${GRAPH}/me/media?fields=${encodeURIComponent(FIELDS)}&limit=25&access_token=${encodeURIComponent(token)}`);
     const j = await r.json();
     if (!r.ok || j.error) throw new Error((j.error && j.error.message) || "Graph API " + r.status);
 

@@ -1,0 +1,1 @@
+(function(d,w){var h=d.documentElement,m=w.matchMedia&&w.matchMedia("(prefers-reduced-motion: reduce)").matches;h.className+=m?" js":" js fx fx-pre";if(!m)w.setTimeout(function(){h.classList.remove("fx-pre")},2600)})(document,window);

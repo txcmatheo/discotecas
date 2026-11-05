@@ -300,3 +300,54 @@ dd > a{display:inline-flex;align-items:center;min-height:44px}
 .qa p a{display:inline-block;color:var(--ink);text-underline-offset:4px;padding:10px 0;margin:-10px 0}
 .qa p a:hover{color:var(--y)}
 @media (max-width:860px){ .faq{grid-template-columns:minmax(0,1fr)} }
+
+.top{transition:border-color .35s cubic-bezier(.16,1,.3,1),background-color .35s cubic-bezier(.16,1,.3,1),box-shadow .35s cubic-bezier(.16,1,.3,1)}
+.top.solid{background:rgba(6,6,7,.9);-webkit-backdrop-filter:saturate(140%) blur(12px);backdrop-filter:saturate(140%) blur(12px);box-shadow:0 12px 28px -20px rgba(0,0,0,.9)}
+.top .lockup .logo-img{transform-origin:50% 50%;transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.top.solid .lockup .logo-img{transform:scale(.92)}
+
+.hero{position:relative;isolation:isolate}
+.hero-fx{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;-webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent)}
+.hero-fx::before{content:"";position:absolute;inset:0;transition:opacity .9s ease;background:
+  linear-gradient(90deg,var(--bg) 0,rgba(6,6,7,.88) 40%,rgba(6,6,7,0) 62%),
+  conic-gradient(from 150deg at 74% -6%,transparent 0deg,rgba(255,212,0,.11) 3deg,transparent 5deg,transparent 15deg,rgba(255,236,190,.08) 17deg,transparent 19deg,transparent 31deg,rgba(255,212,0,.09) 33deg,transparent 35deg,transparent 360deg),
+  conic-gradient(from 168deg at 52% -6%,transparent 0deg,rgba(255,212,0,.07) 3deg,transparent 5deg,transparent 21deg,rgba(255,212,0,.06) 23deg,transparent 25deg,transparent 360deg),
+  radial-gradient(55% 45% at 72% 0%,rgba(255,212,0,.08),transparent 70%)}
+.hero-fx canvas{position:absolute;inset:0;display:block;width:100%;height:100%;opacity:0;transition:opacity .9s ease}
+.gl .hero-fx canvas{opacity:1}
+.gl .hero-fx::before{opacity:0}
+@media (max-width:640px){
+  .hero-fx::before{background:
+    linear-gradient(180deg,rgba(6,6,7,.2) 0,rgba(6,6,7,.9) 14%,rgba(6,6,7,.9) 58%,rgba(6,6,7,0) 70%),
+    conic-gradient(from 155deg at 70% -4%,transparent 0deg,rgba(255,212,0,.11) 3deg,transparent 5deg,transparent 17deg,rgba(255,236,190,.08) 19deg,transparent 21deg,transparent 32deg,rgba(255,212,0,.09) 34deg,transparent 36deg,transparent 360deg),
+    radial-gradient(70% 30% at 60% 0%,rgba(255,212,0,.08),transparent 70%)}
+}
+
+.fx-pre .hero .brand .sub,.fx-pre .hero .night > *{opacity:0}
+.fx .night .count b{display:inline-block}
+.fx .btn{position:relative;isolation:isolate;overflow:hidden}
+.fx .btn::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(140px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.42),transparent 62%);opacity:0;transition:opacity .3s ease}
+.fx .btn.ghost::before{background:radial-gradient(140px circle at var(--mx,50%) var(--my,50%),rgba(255,212,0,.14),transparent 62%)}
+.fx .btn:hover::before{opacity:1}
+
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    #fotos .photo img,.mesas .photo img{scale:1.14;animation:fxPar linear both;animation-timeline:view()}
+  }
+}
+@keyframes fxPar{from{translate:0 -6%}to{translate:0 6%}}
+
+.fx-progress{display:none}
+.fx .fx-progress{display:block;position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--y);transform:scaleX(0);transform-origin:0 50%;pointer-events:none}
+@supports (animation-timeline:scroll()){
+  .fx .fx-progress{animation:fxProg linear both;animation-timeline:scroll(root)}
+}
+@keyframes fxProg{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.fx-st .sec .head.fx-rl{position:relative}
+.fx-st .sec .head.fx-rl::after{content:"";position:absolute;left:0;right:0;bottom:calc(clamp(28px,4vw,48px) * -.5);height:2px;background:var(--yline);transform:scaleX(var(--fxr,1));transform-origin:0 50%;pointer-events:none}
+.fx-st .faq .head.fx-rl::after{bottom:-14px}
+.fx-st #agenda .head.fx-rl::after{background:var(--y)}
+.rail.pinx{scroll-snap-type:none;overflow:hidden}
+.fx-st .hero,.fx-st .sec,.fx-st .site-foot{overflow-x:clip}
+.fx-pin .pin-x{height:var(--pinh,auto)}
+.fx-pin .pin-x > .sec{position:sticky;top:0}

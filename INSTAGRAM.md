@@ -48,6 +48,14 @@ Line up: …  Reservas por WhatsApp
 
 Posts sin fecha ni palabra clave (fotos de la noche, agradecimientos) se ignoran.
 
+## Videos y reels
+
+Los posts de video, los reels y los carruseles cuyo primer elemento es un video también entran como eventos (mismas reglas de fecha o palabra clave):
+- La página muestra primero la miniatura del video (es la imagen que Google indexa y la que se ve si el video no carga).
+- Cuando la tarjeta entra en pantalla, la miniatura se reemplaza por el video en silencio, en bucle y sin controles; se pausa al salir de pantalla.
+- Si el visitante tiene activado "reducir movimiento" o el ahorro de datos, se queda la miniatura.
+- Los enlaces de video de Instagram vencen después de unas horas; como la API se consulta cada 10 minutos, siempre llegan vigentes.
+
 ## Si la página se sirve en otro dominio
 
 Antes de `shared/ig-events.js`:

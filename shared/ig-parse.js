@@ -85,7 +85,11 @@
     var date = dateFrom(caption, post.timestamp);
     if (!isEvent(caption, date)) return null;
     var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    var image = post.media_type === "VIDEO" ? (post.thumbnail_url || null) : (post.media_url || null);
+    var m = post;
+    if (post.media_type === "CAROUSEL_ALBUM" && post.children && post.children.data && post.children.data.length) m = post.children.data[0];
+    var isVideo = m.media_type === "VIDEO";
+    var image = isVideo ? (m.thumbnail_url || post.thumbnail_url || null) : (m.media_url || null);
+    var video = isVideo ? (m.media_url || null) : null;
     return {
       id: "ig_" + post.id,
       title: titleFrom(caption),
@@ -93,6 +97,9 @@
       dateLabel: date ? label(date) : "",
       caption: caption.slice(0, 600),
       image: image,
+      video: video,
+      mediaType: isVideo ? "video" : "image",
+      isReel: post.media_product_type === "REELS",
       permalink: post.permalink || null,
       postedAt: post.timestamp || null,
       isUpcoming: date ? date >= startOfToday : false

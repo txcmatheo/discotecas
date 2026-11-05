@@ -1,1 +1,1 @@
-document.documentElement.className += " js";
+(function(d){var h=d.documentElement,rm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;h.className+=" js"+(rm?"":" fx");if(!rm)setTimeout(function(){if(!/\bfx-on\b/.test(h.className))h.className=h.className.replace(/\bfx\b/,"");},3000);})(document);
