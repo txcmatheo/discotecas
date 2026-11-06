@@ -122,6 +122,7 @@
   function cap(s, n){ s = String(s || ""); return s.length > n ? s.slice(0, n).replace(/\s+\S*$/, "") + "…" : s; }
   function waFor(text){ return WA + encodeURIComponent("Hola Tutaina, quiero reservar mesa para " + text + "."); }
   function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function icon(n){ return '<svg class="i" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
 
   function parse(s){
     if (!s) return null;
@@ -199,13 +200,12 @@
     $("heroName").textContent = shortTitle(ev.title);
     var sub = subTitle(ev.title); $("heroSub").textContent = sub; $("heroSub").hidden = !sub;
     $("heroDates").innerHTML = datesHtml(ev);
-    $("heroNote").textContent = cap(ev.caption, 160); $("heroNote").hidden = !ev.caption;
     var name = ev.standing != null ? "el Viernes Agropecuario (" + longDate(ev._night) + ")" : shortTitle(ev.title);
     $("heroWa").href = waFor(name);
     $("heroWa").setAttribute("aria-label", "Reservar mesa para " + shortTitle(ev.title) + " por WhatsApp");
     var link = safeUrl(ev.permalink);
     $("heroLink").href = link || IG;
-    $("heroLink").textContent = link && !/instagram\.com/.test(link) ? "Ver evento" : "Ver en Instagram";
+    $("heroLinkTxt").textContent = link && !/instagram\.com/.test(link) ? "Ver evento" : "Ver en Instagram";
     try { Count.set(ev); } catch(e){}
   }
 
@@ -247,11 +247,11 @@
     Array.prototype.forEach.call(week.querySelectorAll(".upc"), function(li){ li.remove(); });
     var html = list.map(function(ev){
       var ns = nights(ev), when = ns.length > 1 ? shortDate(ns[0]) + " – " + shortDate(ns[ns.length-1]) : (ns.length ? shortDate(ns[0]) : (ev.dateLabel || ""));
-      var sub = subTitle(ev.title), note = [sub, cap(ev.caption, 70)].filter(Boolean).join(". ");
+      var note = subTitle(ev.title) || cap(ev.caption, 34);
       return '<li class="card upc">' + flyer(ev, ev.alt || ("Flyer de " + plainTitle(ev.title) + " en Tutaina Pereira"), true) +
         '<div class="body"><p class="when">' + esc(when) + '</p><h3>' + esc(shortTitle(ev.title)) + '</h3>' +
-        (note ? '<p class="meta">' + esc(note) + '</p>' : '') +
-        '<a class="btn sm" href="' + esc(waFor(shortTitle(ev.title))) + '" target="_blank" rel="noopener">Reservar</a></div></li>';
+        (note ? '<p class="meta">' + icon("party-popper") + '<span>' + esc(note) + '</span></p>' : '') +
+        '<a class="btn sm" href="' + esc(waFor(shortTitle(ev.title))) + '" target="_blank" rel="noopener">' + icon("message-circle") + 'Reservar</a></div></li>';
     }).join("");
     week.insertAdjacentHTML("afterbegin", html);
   }
@@ -270,9 +270,9 @@
       var today = d.getTime() === nightBase().getTime();
       card.querySelector("[data-when]").textContent = (today ? "Hoy · " : "") + shortDate(d);
       var sp = upc.filter(function(ev){ return covers(ev, d); })[0];
-      var meta = card.querySelector("[data-meta]");
+      var meta = card.querySelector("[data-meta] span");
       if (!meta.hasAttribute("data-base")) meta.setAttribute("data-base", meta.textContent);
-      if (sp) meta.innerHTML = "Este " + name + " " + d.getDate() + ": <b>" + esc(shortTitle(sp.title)) + "</b>";
+      if (sp) meta.innerHTML = "<b>" + esc(shortTitle(sp.title)) + "</b>";
       else meta.textContent = meta.getAttribute("data-base");
       card.querySelector("[data-wa]").href = waFor("el " + longDate(d) + (sp ? " (" + shortTitle(sp.title) + ")" : ""));
       var ev = latest[card.getAttribute("data-kind")], fig = card.querySelector(".fly"), img = card.querySelector("[data-fly]");
@@ -287,7 +287,7 @@
     return used;
   }
 
-  var ARCH_MAX = 12, archList = [], archYear = "all";
+  var ARCH_MAX = 8, archList = [], archYear = "all";
 
   var Slider = (function(){
     var rail = $("archRail"), prev = $("slPrev"), next = $("slNext"), nav = prev && prev.parentNode;
@@ -386,7 +386,7 @@
       return '<li class="card"><a href="' + esc(link) + '" target="_blank" rel="noopener" aria-label="' + esc(title + (lb ? ", " + lb : "")) + ', en Instagram">' +
         flyer(ev, "Flyer de " + plainTitle(ev.title) + " en Tutaina Pereira" + (lb ? ", " + lb : ""), true) +
         '<div class="body"><p class="when">' + esc(lb || "Sin fecha") + '</p><h3>' + esc(title) + '</h3></div></a></li>';
-    }).join("") + (list.length ? '<li class="card rail-more"><a href="' + esc(IG) + '" target="_blank" rel="noopener"><div class="fly"><span class="plate"><span>Instagram</span><b>Ver más en Instagram</b></span></div></a></li>' : "");
+    }).join("") + (list.length ? '<li class="card rail-more"><a href="' + esc(IG) + '" target="_blank" rel="noopener"><div class="fly"><span class="plate"><span class="ic">' + icon("instagram") + '</span><b>Ver más en Instagram</b></span></div></a></li>' : "");
     if (announce) $("archStatus").textContent = list.length + (list.length === 1 ? " evento" : " eventos") + (archYear === "all" ? " recientes" : " de " + archYear);
     Array.prototype.forEach.call($("years").querySelectorAll("button"), function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-y") === archYear ? "true" : "false"); });
     Slider.reset();
@@ -466,4 +466,83 @@
   var mqDesk = window.matchMedia("(min-width: 981px)");
   var closeOnDesk = function(){ if (mqDesk.matches && drawer.classList.contains("open")) setMenu(false); };
   if (mqDesk.addEventListener) mqDesk.addEventListener("change", closeOnDesk); else if (mqDesk.addListener) mqDesk.addListener(closeOnDesk);
+})();
+(function(){
+  "use strict";
+  var w = window, d = document, box = d.getElementById("map"), gl = d.getElementById("mapGl"), fb = d.getElementById("mapFb");
+  if (!box || !gl || !("IntersectionObserver" in w)) return;
+  var CDN = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/";
+  var TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  var ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+  var LAT = +box.getAttribute("data-lat"), LNG = +box.getAttribute("data-lng");
+  var DIR = "https://www.google.com/maps/dir/?api=1&destination=Tutaina+Eje+Cafetero%2C+Av.+Circunvalar+13-01+Este+10%2C+Pereira";
+  var WAL = "https://wa.me/573011265132?text=" + encodeURIComponent("Hola Tutaina, quiero reservar una mesa.");
+  var rm = w.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var desk = w.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 861px)");
+  var ZOOM = 16, asked = false, flown = false, seen = false, ready = false, map = null, mk = null;
+  function ico(n){ return '<svg class="i" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+  function load(){
+    if (asked) return; asked = true;
+    if (w.L && w.L.map){ init(); return; }
+    var l = d.createElement("link"); l.rel = "stylesheet"; l.href = CDN + "leaflet.min.css"; d.head.appendChild(l);
+    var s = d.createElement("script"); s.src = CDN + "leaflet.min.js"; s.async = true;
+    s.onload = function(){ try { init(); } catch(e){} };
+    d.head.appendChild(s);
+  }
+  function popupHtml(){
+    return '<div class="pop"><p class="pop-n">Tutaina Eje Cafetero</p>' +
+      '<p class="pop-r">' + ico("clock") + '<span>Jue a sáb · 9:30 PM – 4 AM</span></p>' +
+      '<p class="pop-r">' + ico("map-pin") + '<span>Av. Circunvalar # 13-01 Este 10</span></p>' +
+      '<div class="pop-a"><a class="btn sm" href="' + DIR + '" target="_blank" rel="noopener">' + ico("navigation") + 'Cómo llegar</a>' +
+      '<a class="btn sm ghost" href="' + WAL + '" target="_blank" rel="noopener">' + ico("message-circle") + 'WhatsApp</a></div></div>';
+  }
+  function target(){
+    var L = w.L, sh = Math.round(Math.min(110, gl.clientHeight * .24));
+    return map.unproject(map.project(L.latLng(LAT, LNG), ZOOM).subtract(L.point(0, sh)), ZOOM);
+  }
+  function openDesk(){ if (desk.matches && mk) mk.openPopup(); }
+  function fly(){
+    if (flown || !ready || !seen || !map) return;
+    flown = true;
+    if (rm){ openDesk(); return; }
+    map.once("moveend", openDesk);
+    map.flyTo(target(), ZOOM, { duration:1.6, easeLinearity:.2 });
+  }
+  function init(){
+    var L = w.L; if (!L || !L.map || map) return;
+    map = L.map(gl, { zoomControl:false, scrollWheelZoom:false, dragging:!L.Browser.mobile, tap:false, zoomSnap:.25, fadeAnimation:!rm, zoomAnimation:!rm, markerZoomAnimation:!rm, attributionControl:true });
+    map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+    map.setView([LAT, LNG], rm ? ZOOM : 13, { animate:false });
+    if (rm) map.setView(target(), ZOOM, { animate:false });
+    L.control.zoom({ position:"topright", zoomInTitle:"Acercar", zoomOutTitle:"Alejar" }).addTo(map);
+    var ok = 0, tiles = L.tileLayer(TILES, { maxZoom:19, attribution:ATTR });
+    tiles.on("tileload", function(){ ok++; });
+    tiles.on("load", function(){
+      if (ready || !ok) return;
+      ready = true;
+      box.classList.add("on");
+      if (fb){ fb.hidden = true; }
+      fly();
+    });
+    tiles.addTo(map);
+    var icon = L.divIcon({ className:"pin pin-btn", iconSize:[56, 68], iconAnchor:[28, 63], popupAnchor:[0, -58],
+      html:'<span class="pin-ring" aria-hidden="true"></span><span class="pin-head" aria-hidden="true">' + ico("crown") + '</span>' });
+    mk = L.marker([LAT, LNG], { icon:icon, keyboard:true, riseOnHover:false }).addTo(map);
+    mk.bindPopup(popupHtml(), { className:"tt-pop", maxWidth:300, minWidth:240, closeButton:true, autoPan:true, autoPanPaddingTopLeft:L.point(16, 12), autoPanPaddingBottomRight:L.point(64, 40) });
+    var el = mk.getElement();
+    if (el) el.setAttribute("aria-label", "Tutaina Eje Cafetero: ver horario y dirección");
+    map.on("popupopen", function(e){
+      var c = e.popup.getElement() && e.popup.getElement().querySelector(".leaflet-popup-close-button");
+      if (c) c.setAttribute("aria-label", "Cerrar");
+    });
+    gl.setAttribute("role", "region");
+    gl.setAttribute("aria-label", "Mapa: Tutaina Eje Cafetero, Av. Circunvalar # 13-01 Este 10, Pereira");
+    w.__tutMap = map;
+  }
+  new IntersectionObserver(function(es, o){
+    if (es.some(function(e){ return e.isIntersecting; })){ o.disconnect(); load(); }
+  }, { rootMargin:"600px 0px" }).observe(box);
+  new IntersectionObserver(function(es, o){
+    if (es.some(function(e){ return e.isIntersecting; })){ seen = true; o.disconnect(); fly(); }
+  }, { threshold:.45 }).observe(box);
 })();

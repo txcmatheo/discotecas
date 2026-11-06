@@ -145,6 +145,39 @@
   }
   if (GL) later(GL.start);
 
+  (function tilt(){
+    if (rm || !fine) return;
+    var cur = null, raf = 0, ev = null, MAX = 6;
+    function pick(t){
+      var f = t && t.closest && t.closest(".hero .fly, #week .fly, #arch .fly");
+      return f && !(f.closest(".rail.drag")) ? f : null;
+    }
+    function off(f){
+      if (!f) return;
+      f.classList.remove("on");
+      ["--rax","--ray","--ran","--ga","--sx"].forEach(function(p){ f.style.removeProperty(p); });
+    }
+    function paint(){
+      raf = 0; if (!cur || !ev) return;
+      var r = cur.getBoundingClientRect(); if (!r.width) return;
+      var px = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)), py = Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height));
+      var rx = (.5 - py) * 2 * MAX, ry = (px - .5) * 2 * MAX, ang = Math.sqrt(rx * rx + ry * ry) || .001;
+      var st = cur.style;
+      st.setProperty("--rax", (rx / ang).toFixed(3)); st.setProperty("--ray", (ry / ang).toFixed(3)); st.setProperty("--ran", ang.toFixed(2) + "deg");
+      st.setProperty("--gx", (px * 100).toFixed(1) + "%"); st.setProperty("--gy", (py * 100).toFixed(1) + "%"); st.setProperty("--ga", "1");
+      st.setProperty("--sx", (-ry * 3).toFixed(1));
+    }
+    d.addEventListener("pointermove", function(e){
+      if (e.pointerType !== "mouse") return;
+      var f = pick(e.target);
+      if (f !== cur){ off(cur); cur = f; if (f){ f.classList.add("tilt"); f.classList.add("on"); } }
+      if (!cur) return;
+      ev = e; if (!raf) raf = w.requestAnimationFrame(paint);
+    }, { passive:true });
+    d.addEventListener("pointerleave", function(){ off(cur); cur = null; });
+    $$(".hero .fly, #week .fly").forEach(function(f){ f.classList.add("tilt"); });
+  })();
+
   if (rm || !g){ h.classList.remove("fx-pre"); if (!g) h.classList.remove("fx"); return; }
   if (ST) g.registerPlugin(ST);
   g.defaults({ ease:"power3.out", duration:.6 });
@@ -237,7 +270,8 @@
     var week = d.getElementById("week");
     rebuildable(week, function(){
       var li = $$(":scope > li", week); if (!li.length) return;
-      var figs = li.map(function(x){ return x.querySelector(".fly"); }).filter(Boolean);
+      var figs = [];
+      li.forEach(function(x){ figs = figs.concat($$(".fly > img, .fly > .plate", x)); });
       var tl = g.timeline({ scrollTrigger:{ trigger:week, start:"top 92%", end:"top 38%", scrub:.6 } });
       tl.fromTo(li, { y:90, opacity:0 }, { y:0, opacity:1, stagger:.14, duration:.7, ease:"power2.out" }, 0);
       tl.fromTo(figs, { clipPath:"inset(0% 0% 100% 0% round 4px)" }, { clipPath:"inset(0% 0% 0% 0% round 4px)", stagger:.14, duration:.7, ease:"power2.out" }, .05);
@@ -349,7 +383,7 @@
     if (!loc) return;
     var tl = g.timeline({ scrollTrigger:{ trigger:loc, start:"top 92%", end:"top 45%", scrub:.6 } });
     if (info) tl.fromTo($$(".info3 > div, .loc-actions", info), { x:-70, opacity:0 }, { x:0, opacity:1, stagger:.12, duration:.7, ease:"power2.out" }, 0);
-    if (map) tl.fromTo(map, { x:90, opacity:0, clipPath:"inset(0% 0% 0% 30%)" }, { x:0, opacity:1, clipPath:"inset(0% 0% 0% 0%)", duration:.9, ease:"power2.out" }, .1);
+    if (map) tl.fromTo(map, { x:90, opacity:0, scale:.96 }, { x:0, opacity:1, scale:1, duration:.9, ease:"power2.out" }, .1);
   }
 
   function progress(){
@@ -362,11 +396,10 @@
     if (!ST) return;
     h.classList.add("fx-st");
     scrubHero(); heads(); cards(); archive(); photos(); mesas(); place(); progress();
-    $$(".note").forEach(function(el){ reveal(el, function(){ return [el]; }, { y:12 }); });
     var qas = d.querySelector(".qas");
     reveal(qas, function(){ return $$(":scope > .qa", qas); }, { s:.05, y:14, d:.5 });
     var fg = d.querySelector(".fgrid");
-    reveal(fg, function(){ return $$(":scope > .fcol", fg); }, { s:.07, y:14, start:"top 96%" });
+    reveal(fg, function(){ return $$(":scope > *", fg); }, { s:.07, y:14, start:"top 96%" });
     w.addEventListener("load", refresh);
   }
 

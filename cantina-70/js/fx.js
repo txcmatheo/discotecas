@@ -206,6 +206,23 @@
       });
       b.addEventListener("pointerleave", function(){ qx(0); qy(0); });
     });
+    var tilt = function(f){
+      if (f.__tl) return; f.__tl = true;
+      var rx = G.quickTo(f, "rotationX", { duration:.6, ease:E }), ry = G.quickTo(f, "rotationY", { duration:.6, ease:E });
+      G.set(f, { transformPerspective:900 });
+      f.addEventListener("pointermove", function(e){
+        if (e.pointerType !== "mouse") return;
+        var r = f.getBoundingClientRect(), px = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)), py = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+        ry((px - .5) * 12); rx((.5 - py) * 12);
+        f.classList.add("tilt");
+        f.style.setProperty("--gx", (px * 100).toFixed(1) + "%"); f.style.setProperty("--gy", (py * 100).toFixed(1) + "%"); f.style.setProperty("--go", "1");
+      });
+      f.addEventListener("pointerleave", function(){ rx(0); ry(0); f.classList.remove("tilt"); f.style.setProperty("--go", "0"); });
+    };
+    d.addEventListener("pointerover", function(e){
+      if (e.pointerType !== "mouse" || !e.target.closest) return;
+      var f = e.target.closest(".fly"); if (f) tilt(f);
+    }, { passive:true });
   }
 
   if (!ST) return;
@@ -314,7 +331,7 @@
   if (faqs.length) G.fromTo(faqs, { opacity:0, y:22 }, { opacity:1, y:0, ease:"none", stagger:.2, scrollTrigger:S(".faq", "top 92%", "top 45%") });
 
   reveal(".perks", ":scope > li", { opacity:0, y:12 });
-  reveal(".loc dl", ":scope > div", { opacity:0, y:14 });
+  reveal(".loc-list", ":scope > li", { opacity:0, y:14 });
   reveal(".upc", ":scope > li", { opacity:0, y:12 });
 
   var rt = 0;

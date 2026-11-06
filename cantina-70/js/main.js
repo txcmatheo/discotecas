@@ -52,9 +52,26 @@
   function absUrl(u){ return /^https:/.test(u) ? u : SITE_URL + u; }
   function plainTitle(t){ return String(t || "Evento en Cantina 70").split(" · ").join(", "); }
   function shortTitle(t){ return String(t || "Evento en Cantina 70").split(" · ")[0]; }
-  function cap(s, n){ s = String(s || ""); return s.length > n ? s.slice(0, n).replace(/\s+\S*$/, "") + "…" : s; }
   function waFor(text){ return WA + encodeURIComponent("Hola Cantina 70, quiero reservar una mesa para " + text); }
   function ucf(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+  function ico(n){ return '<svg class="ico" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+  function chip(n, t){ return '<li><span class="ipill">' + ico(n) + '</span>' + esc(t) + '</li>'; }
+  var CHIP_ICO = [[/cover/i,"ticket"],[/2x1|botella|cuervo|ron\b|trago|cóctel/i,"wine"],[/en vivo|cantante|concierto|show/i,"mic-vocal"],[/premio|millones|regalo|sorteo/i,"gift"],[/cumple/i,"cake"],[/halloween|brujas|disfra|fiesta|temátic/i,"party-popper"],[/banda|despecho|popular|música|dj\b/i,"music"],[/reserva/i,"calendar-check"]];
+  var CHIP_KEY = /\d+\s*millones en premios|no cover(?: con reserva)?(?: hasta \d{1,2}:\d{2} [ap]\.m\.)?|2x1 en \S+(?: hasta \d{1,2}:\d{2} [ap]\.m\.)?|[^.,]{0,24}en vivo/i;
+  function words(t){ return t.split(/\s+/).length; }
+  function chipsFor(caption, extra){
+    var out = [], seen = {};
+    function add(t){
+      t = t.replace(/^\s+|[\s.]+$/g, "").replace(/\s+(p|a)\.m$/i, " $1.m.");
+      if (!t || words(t) > 7){ var m = t.match(CHIP_KEY); if (!m) return; t = m[0].trim(); }
+      t = ucf(t); var k = t.toLowerCase(); if (seen[k] || out.length >= 3) return; seen[k] = 1;
+      var n = "sparkles"; for (var i = 0; i < CHIP_ICO.length; i++) if (CHIP_ICO[i][0].test(t)){ n = CHIP_ICO[i][1]; break; }
+      out.push(chip(n, t));
+    }
+    String(caption || "").replace(/\s+de licor nacional y José Cuervo/gi, "").replace(/hasta las /gi, "hasta ").split(/\.\s+(?=[A-ZÁÉÍÓÚÑ¡¿0-9])|\s+·\s+|\n+/).forEach(add);
+    if (extra) add(extra);
+    return out.join("");
+  }
 
   function nightBase(){ var d = new Date(Date.now() - 4*3600e3); d.setHours(0,0,0,0); return d; }
   function midnight(iso){ var d = new Date(iso); if (isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
@@ -111,7 +128,7 @@
     $("heroTag").textContent = first ? relLabel(first) : "Próximo evento";
     $("heroName").textContent = shortTitle(ev.title);
     $("heroDate").textContent = ev._night ? shortDate(ev._night) : label(ev).replace(/, /g, " · ").replace(/ y /, " · ");
-    $("heroNote").textContent = cap(ev.caption, 140); $("heroNote").hidden = !ev.caption;
+    var ch = chipsFor(ev.caption, ev.prize); $("heroNote").innerHTML = ch; $("heroNote").hidden = !ch;
     var name = ev._night ? "el " + shortTitle(ev.title).toLowerCase() + " (" + longDate(ev._night) + ")" : plainTitle(ev.title);
     $("heroWa").href = waFor(name);
     setCountdown(ev);
@@ -183,19 +200,19 @@
       t.querySelector("[data-when]").textContent = today ? "Hoy" : d.getDate() + " " + MO[d.getMonth()];
       if (d.getTime() < bestT){ bestT = d.getTime(); best = t; }
       var sp = upc.filter(function(ev){ return covers(ev, d); })[0];
-      var nm = p.querySelector("[data-name-el]"), fx = p.querySelector("[data-facts-el]"), im = p.querySelector("[data-img-el]"), fig = im.parentNode, ig = p.querySelector("[data-ig]");
+      var nm = p.querySelector("[data-name-el]"), fx = p.querySelector("[data-facts-el]"), def = fx.__def || (fx.__def = fx.innerHTML), im = p.querySelector("[data-img-el]"), fig = im.parentNode, ig = p.querySelector("[data-ig]");
       p.querySelector("[data-when-el]").textContent = (today ? "Hoy, " : "") + ucf(longDate(d));
       var old = t.querySelector(".dot"); if (old) old.remove();
       if (sp && safeUrl(sp.image)){
         nm.textContent = shortTitle(sp.title);
-        fx.innerHTML = esc(cap(sp.caption, 180)) || ("<b>" + esc(plainTitle(sp.title)) + "</b>");
+        fx.innerHTML = chipsFor(sp.caption, sp.prize) || chip("sparkles", plainTitle(sp.title));
         im.src = safeUrl(sp.image); im.alt = sp.alt || ("Flyer de " + plainTitle(sp.title) + " en Cantina 70");
         fig.classList.remove("ph");
         ig.href = safeUrl(sp.permalink) || IG; ig.hidden = false;
         var dot = document.createElement("span"); dot.className = "dot"; dot.setAttribute("aria-hidden", "true"); t.querySelector("b").appendChild(dot);
       } else {
         nm.textContent = p.getAttribute("data-name");
-        fx.textContent = p.getAttribute("data-facts");
+        fx.innerHTML = def;
         var src = p.getAttribute("data-img"); if (im.getAttribute("src") !== src) im.src = src;
         im.alt = p.getAttribute("data-alt");
         fig.classList.toggle("ph", !p.hasAttribute("data-flyer"));
@@ -211,9 +228,9 @@
   function renderUpcoming(list){
     $("upc").innerHTML = list.map(function(ev){
       var title = shortTitle(ev.title);
-      return '<li><span class="u-d">' + esc(label(ev)) + '</span>' +
+      return '<li><span class="u-d">' + ico("calendar") + esc(label(ev)) + '</span>' +
         '<p class="u-n"><a href="' + esc(safeUrl(ev.permalink) || IG) + '" target="_blank" rel="noopener">' + esc(plainTitle(ev.title)) + '</a></p>' +
-        '<a class="tlink" href="' + esc(waFor(plainTitle(ev.title))) + '" target="_blank" rel="noopener" aria-label="Reservar mesa para ' + esc(title) + '">Reservar</a></li>';
+        '<a class="tlink" href="' + esc(waFor(plainTitle(ev.title))) + '" target="_blank" rel="noopener" aria-label="Reservar mesa para ' + esc(title) + '">' + ico("message-circle") + 'Reservar</a></li>';
     }).join("");
     $("upcWrap").hidden = !list.length;
   }
@@ -294,7 +311,7 @@
       var link = safeUrl(ev.permalink) || IG, title = shortTitle(ev.title);
       return '<li><a href="' + esc(link) + '" target="_blank" rel="noopener" aria-label="' + esc(title + ", " + label(ev)) + ', en Instagram">' +
         '<figure class="fly"><img src="' + esc(safeUrl(ev.image)) + '" alt="' + esc(ev.alt || ("Flyer de " + plainTitle(ev.title) + " en Cantina 70")) + '" width="831" height="1110" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-rm-li></figure>' +
-        '<p><b>' + esc(title) + '</b><span>' + esc(label(ev)) + '</span></p></a></li>';
+        '<p><b>' + esc(title) + '</b><span>' + ico("calendar") + esc(label(ev)) + '</span></p></a></li>';
     }).join("");
     $("eventos-pasados").hidden = !list.length;
     Slider.reset();
@@ -385,4 +402,75 @@
   var mqDesk = window.matchMedia("(min-width: 1101px)");
   var closeOnDesk = function(){ if (mqDesk.matches && drawer.classList.contains("open")) setMenu(false); };
   if (mqDesk.addEventListener) mqDesk.addEventListener("change", closeOnDesk); else if (mqDesk.addListener) mqDesk.addListener(closeOnDesk);
+})();
+
+(function(){
+  "use strict";
+  var w = window, d = document;
+  var box = d.getElementById("map"), host = d.getElementById("mapGl"), sec = d.getElementById("llegar"), tpl = d.getElementById("mapPop");
+  if (!box || !host || !sec || !("IntersectionObserver" in w)) return;
+  var CDN = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/";
+  var TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  var ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+  var lng = +box.getAttribute("data-lng"), lat = +box.getAttribute("data-lat");
+  var rmq = w.matchMedia("(prefers-reduced-motion: reduce)");
+  var desk = w.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 861px)");
+  var ZOOM = 16;
+  var map = null, mk = null, ready = false, flown = false, seen = false, asked = false;
+
+  function inject(){
+    if (asked) return; asked = true;
+    if (w.L && w.L.map){ init(); return; }
+    var l = d.createElement("link"); l.rel = "stylesheet"; l.href = CDN + "leaflet.min.css"; d.head.appendChild(l);
+    var s = d.createElement("script"); s.src = CDN + "leaflet.min.js"; s.async = true;
+    s.addEventListener("load", init);
+    d.head.appendChild(s);
+  }
+  function target(){
+    var L = w.L, sh = Math.round(Math.min(110, host.clientHeight * .24));
+    return map.unproject(map.project(L.latLng(lat, lng), ZOOM).subtract(L.point(0, sh)), ZOOM);
+  }
+  function openDesk(){ if (desk.matches && mk) mk.openPopup(); }
+  function fly(){
+    if (!ready || flown || !seen) return;
+    flown = true;
+    if (rmq.matches){ openDesk(); return; }
+    map.once("moveend", openDesk);
+    map.flyTo(target(), ZOOM, { duration:1.6, easeLinearity:.2 });
+  }
+  function init(){
+    var L = w.L; if (!L || !L.map || map) return;
+    var still = rmq.matches;
+    try {
+      map = L.map(host, { zoomControl:false, scrollWheelZoom:false, dragging:!L.Browser.mobile, tap:false, zoomSnap:.25, fadeAnimation:!still, zoomAnimation:!still, markerZoomAnimation:!still });
+      map.setView([lat, lng], still ? ZOOM : 13, { animate:false });
+      if (still) map.setView(target(), ZOOM, { animate:false });
+    } catch(e){ map = null; return; }
+    map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+    L.control.zoom({ position:"topright", zoomInTitle:"Acercar", zoomOutTitle:"Alejar" }).addTo(map);
+    var ok = 0, tiles = L.tileLayer(TILES, { maxZoom:19, attribution:ATTR });
+    tiles.on("tileload", function(){ ok++; });
+    tiles.on("load", function(){
+      if (ready || !ok) return;
+      ready = true; box.classList.add("ready");
+      fly();
+    });
+    tiles.addTo(map);
+    var icon = L.divIcon({ className:"mk mk-live", iconSize:[56, 64], iconAnchor:[28, 60], popupAnchor:[0, -56],
+      html:'<span class="mk-ring" aria-hidden="true"></span><span class="mk-pin" aria-hidden="true"><span class="mk-70">70</span></span>' });
+    mk = L.marker([lat, lng], { icon:icon, keyboard:true, riseOnHover:false }).addTo(map);
+    var body = d.createElement("div");
+    if (tpl && tpl.content) body.appendChild(tpl.content.cloneNode(true));
+    mk.bindPopup(body, { className:"c70-pop", maxWidth:320, minWidth:240, closeButton:true, autoPan:true, autoPanPaddingTopLeft:L.point(16, 12), autoPanPaddingBottomRight:L.point(64, 40) });
+    var el = mk.getElement();
+    if (el) el.setAttribute("aria-label", "Cantina 70: horario y cómo llegar");
+    map.on("popupopen", function(e){
+      var c = e.popup.getElement() && e.popup.getElement().querySelector(".leaflet-popup-close-button");
+      if (c) c.setAttribute("aria-label", "Cerrar");
+    });
+    host.setAttribute("role", "region");
+    host.setAttribute("aria-label", "Mapa: Cantina 70, Carrera 70 #44B, Laureles");
+  }
+  new IntersectionObserver(function(en, o){ if (en[0].isIntersecting){ o.disconnect(); inject(); } }, { rootMargin:"600px 0px" }).observe(sec);
+  new IntersectionObserver(function(en, o){ if (en[0].isIntersecting){ seen = true; o.disconnect(); fly(); } }, { threshold:.35 }).observe(box);
 })();
