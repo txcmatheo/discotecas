@@ -491,8 +491,8 @@
   }
   function popupHtml(){
     return '<div class="pop"><p class="pop-n">Tutaina Eje Cafetero</p>' +
-      '<p class="pop-r">' + ico("clock") + '<span>Jue a sáb · 9:30 PM – 4 AM</span></p>' +
-      '<p class="pop-r">' + ico("map-pin") + '<span>Av. Circunvalar # 13-01 Este 10</span></p>' +
+      '<p class="pop-r">' + ico("clock") + '<span>Jue–sáb · 9:30 PM–4 AM</span></p>' +
+      '<p class="pop-r">' + ico("map-pin") + '<span>Av. Circunvalar #13-01 Este 10</span></p>' +
       '<div class="pop-a"><a class="btn sm" href="' + DIR + '" target="_blank" rel="noopener">' + ico("navigation") + 'Cómo llegar</a>' +
       '<a class="btn sm ghost" href="' + WAL + '" target="_blank" rel="noopener">' + ico("message-circle") + 'WhatsApp</a></div></div>';
   }
@@ -514,7 +514,7 @@
     map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
     map.setView([LAT, LNG], rm ? ZOOM : 13, { animate:false });
     if (rm) map.setView(target(), ZOOM, { animate:false });
-    L.control.zoom({ position:"topright", zoomInTitle:"Acercar", zoomOutTitle:"Alejar" }).addTo(map);
+    L.control.zoom({ position:"bottomleft", zoomInTitle:"Acercar", zoomOutTitle:"Alejar" }).addTo(map);
     var ok = 0, tiles = L.tileLayer(TILES, { maxZoom:19, attribution:ATTR });
     tiles.on("tileload", function(){ ok++; });
     tiles.on("load", function(){
@@ -528,7 +528,7 @@
     var icon = L.divIcon({ className:"pin pin-btn", iconSize:[56, 68], iconAnchor:[28, 63], popupAnchor:[0, -58],
       html:'<span class="pin-ring" aria-hidden="true"></span><span class="pin-head" aria-hidden="true">' + ico("crown") + '</span>' });
     mk = L.marker([LAT, LNG], { icon:icon, keyboard:true, riseOnHover:false }).addTo(map);
-    mk.bindPopup(popupHtml(), { className:"tt-pop", maxWidth:300, minWidth:240, closeButton:true, autoPan:true, autoPanPaddingTopLeft:L.point(16, 12), autoPanPaddingBottomRight:L.point(64, 40) });
+    mk.bindPopup(popupHtml(), { className:"tt-pop", maxWidth:Math.min(320, window.innerWidth - 56), minWidth:Math.min(280, window.innerWidth - 56), closeButton:true, autoPan:true, autoPanPaddingTopLeft:L.point(16, 12), autoPanPaddingBottomRight:L.point(64, 40) });
     var el = mk.getElement();
     if (el) el.setAttribute("aria-label", "Tutaina Eje Cafetero: ver horario y dirección");
     map.on("popupopen", function(e){

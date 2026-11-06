@@ -299,9 +299,10 @@ li:hover > .ipill,a:hover .ipill,summary:hover .ipill,details[open] .ipill,h3:ho
 .leaflet-container .c70-pop .pop-cta .btn.ghost{color:var(--gold)}
 .leaflet-container .c70-pop .pop-cta .btn.ghost:hover{color:var(--gold-hi)}
 .pop-n{margin:0 40px 10px 0;font:700 22px/1.2 var(--display);color:var(--gold)}
-.pop-r{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:14px}
+.pop-r{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:14px;white-space:nowrap}
 .pop-r .ico{width:16px;height:16px;color:var(--gold)}
 .pop-cta{justify-content:flex-start;gap:8px;margin-top:10px}
+.pop-cta .btn{flex:1 1 128px;justify-content:center;white-space:nowrap}
 .pop-cta .btn{padding:9px 12px;font-size:13px;letter-spacing:.06em;min-height:44px}
 .map .leaflet-container{isolation:isolate;background:#0E0D0B;font:400 14px/1.4 var(--text);outline-offset:-2px}
 .map .leaflet-tile-pane{filter:grayscale(1) invert(1) contrast(.85) brightness(.85) sepia(.75) saturate(1.35)}

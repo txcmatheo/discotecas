@@ -447,7 +447,7 @@
       if (still) map.setView(target(), ZOOM, { animate:false });
     } catch(e){ map = null; return; }
     map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
-    L.control.zoom({ position:"topright", zoomInTitle:"Acercar", zoomOutTitle:"Alejar" }).addTo(map);
+    L.control.zoom({ position:"bottomleft", zoomInTitle:"Acercar", zoomOutTitle:"Alejar" }).addTo(map);
     var ok = 0, tiles = L.tileLayer(TILES, { maxZoom:19, attribution:ATTR });
     tiles.on("tileload", function(){ ok++; });
     tiles.on("load", function(){
@@ -461,7 +461,7 @@
     mk = L.marker([lat, lng], { icon:icon, keyboard:true, riseOnHover:false }).addTo(map);
     var body = d.createElement("div");
     if (tpl && tpl.content) body.appendChild(tpl.content.cloneNode(true));
-    mk.bindPopup(body, { className:"c70-pop", maxWidth:320, minWidth:240, closeButton:true, autoPan:true, autoPanPaddingTopLeft:L.point(16, 12), autoPanPaddingBottomRight:L.point(64, 40) });
+    mk.bindPopup(body, { className:"c70-pop", maxWidth:Math.min(320, window.innerWidth - 56), minWidth:Math.min(280, window.innerWidth - 56), closeButton:true, autoPan:true, autoPanPaddingTopLeft:L.point(16, 12), autoPanPaddingBottomRight:L.point(64, 40) });
     var el = mk.getElement();
     if (el) el.setAttribute("aria-label", "Cantina 70: horario y cómo llegar");
     map.on("popupopen", function(e){

@@ -406,9 +406,10 @@ li:hover > .ic,dt:hover > .ic,a:hover > .ic,h3:hover > .ic{border-color:rgba(255
 .leaflet-container .tt-pop .pop-a .btn.ghost{color:var(--ink)}
 .pop p{margin:0}
 .pop-n{font:700 18px/1.1 var(--d);text-transform:uppercase;letter-spacing:.02em;color:var(--y);margin:0 36px 10px 0!important}
-.pop-r{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);padding:3px 0}
+.pop-r{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);padding:3px 0;white-space:nowrap}
 .pop-r .i{width:18px;height:18px;color:var(--y)}
 .pop-a{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pop-a .btn{flex:1 1 128px;justify-content:center;white-space:nowrap}
 .pop-a .btn{padding:10px 14px;letter-spacing:.06em}
 
 .site-foot{position:relative;padding:clamp(44px,5vw,64px) 0 calc(24px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent,var(--s1) 70%)}
